@@ -1,19 +1,11 @@
 pipeline {
-    agent {
-        dockerfile true
-    }
+    agent any
+
     stages {
-        stage('Back-end') {
+        stage('Build') {
             steps {
-                sh 'mvn --version'
-            }
-        }
-        stage('Front-end') {
-            agent {
-                docker { image 'node:14-alpine' }
-            }
-            steps {
-                sh 'node --version'
+                sh 'make' 
+                archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true 
             }
         }
     }
