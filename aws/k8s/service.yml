@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: capstone-app-svc
+  labels:
+    name: capstone-app-dep
+spec:
+  selector:
+    app: capstone-app-dep
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP

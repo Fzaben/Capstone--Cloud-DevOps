@@ -1,0 +1,34 @@
+[
+	{
+		"ParameterKey": "KeyName",
+		"ParameterValue": "Capston"
+	},
+	{
+		"ParameterKey": "OnDemandBootstrapArguments",
+		"ParameterValue": "--kubelet-extra-args --node-labels=lifecycle=OnDemand"
+	},
+	{
+		"ParameterKey": "NodeImageId",
+		"ParameterValue": "ami-0b8645c094f80dd52"
+	},
+	{
+		"ParameterKey": "OnDemandNodeInstanceType",
+		"ParameterValue": "t2.medium"
+	},
+	{
+		"ParameterKey": "ClusterName",
+		"ParameterValue": "UdacityCapStone-Cluster"
+	},
+	{
+		"ParameterKey": "ClusterControlPlaneSecurityGroup",
+		"ParameterValue": "sg-0f0c78c88cb392307"
+	},
+	{
+		"ParameterKey": "VpcId",
+		"ParameterValue": "vpc-083b73f946526d694"
+	},
+	{
+		"ParameterKey": "Subnets",
+		"ParameterValue": "subnet-0da58b9503386fb58,subnet-00dcd57fe5fe77262,subnet-0354632cacfa2a26a"
+	}
+]
