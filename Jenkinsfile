@@ -1,8 +1,12 @@
 node('jenkins-slave') {
     
-     stage('unit-tests') {
+     stage('test pipeline') {
         sh(script: """
-            docker run --rm alpine /bin/sh -c "echo hello world"
+            echo "hello"
+           git clone https://github.com/Fzaben/Capstone--Cloud-DevOps/pulse
+           cd ./docker-development-youtube-series/golang
+           
+           docker build . -t test
         """)
     }
 }
