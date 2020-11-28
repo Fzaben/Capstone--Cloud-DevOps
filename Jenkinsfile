@@ -4,7 +4,7 @@ pipeline {
         stage('build') {
             steps {
                 echo "Hello World!"
-                make lint
+                sh 'make lint' 
             }
         }
     }
