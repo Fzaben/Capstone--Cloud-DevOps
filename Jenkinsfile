@@ -1,10 +1,14 @@
 pipeline {
+    docker {
+      image 'node:lts-buster-slim'
+      
+    }
     agent any
     stages {
-        stage('build') {
+        stage('test') {
             steps {
                 echo "Hello World!"
-                sh 'make lint' 
+                sh 'docker ps' 
             }
         }
     }
