@@ -11,7 +11,7 @@ pipeline {
 	stages {
         stage('Clone') {
             steps {
-                git clone "https://github.com/Fzaben/Capstone--Cloud-DevOps.git"
+                gh repo clone "Fzaben/Capstone--Cloud-DevOps"
             }
         }
         stage('Lint') {
