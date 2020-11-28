@@ -15,6 +15,7 @@ pipeline {
             steps {
                 script {
 					ls -la
+                    make lint
                 }
             }
         }
@@ -29,34 +30,34 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                script {
-                    docker.build("$NGINX_IMAGE", "-f ./infra/docker/$ROLE/nginx/Dockerfile .")
-                    docker.build("$FLASK_IMAGE", "-f ./infra/docker/$ROLE/flask/Dockerfile .")
-                }
-            }
-        }
+    //     stage('Build') {
+    //         steps {
+    //             script {
+    //                 docker.build("$NGINX_IMAGE", "-f ./infra/docker/$ROLE/nginx/Dockerfile .")
+    //                 docker.build("$FLASK_IMAGE", "-f ./infra/docker/$ROLE/flask/Dockerfile .")
+    //             }
+    //         }
+    //     }
 
-        stage('Publish') {
-            steps {
-                script {
-                    docker.image("$NGINX_IMAGE").push()
-                    docker.image("$FLASK_IMAGE").push()
-                }
-            }
-        }
+    //     stage('Publish') {
+    //         steps {
+    //             script {
+    //                 docker.image("$NGINX_IMAGE").push()
+    //                 docker.image("$FLASK_IMAGE").push()
+    //             }
+    //         }
+    //     }
 
-        stage('Deploy') {
-            steps {
-                withAWS(credentials: 'aws-creds', region: 'us-west-2') {
-                    sh """
-                    kubectl apply --kubeconfig=${K8S_CONFIG_FILE} \
-                        -f ./infra/k8s/deployments/${ROLE}.yaml \
-                        -f ./infra/k8s/services/${ROLE}.yaml
-                    """
-                }
-            }
-        }
-    }
+    //     stage('Deploy') {
+    //         steps {
+    //             withAWS(credentials: 'aws-creds', region: 'us-west-2') {
+    //                 sh """
+    //                 kubectl apply --kubeconfig=${K8S_CONFIG_FILE} \
+    //                     -f ./infra/k8s/deployments/${ROLE}.yaml \
+    //                     -f ./infra/k8s/services/${ROLE}.yaml
+    //                 """
+    //             }
+    //         }
+    //     }
+    // }
 }
