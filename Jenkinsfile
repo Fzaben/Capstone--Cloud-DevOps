@@ -15,7 +15,6 @@ pipeline {
             steps {
                 script {
 					ls -la
-                    docker.build("$CI_IMAGE", "-f ./Dockerfile .")
                 }
             }
         }
