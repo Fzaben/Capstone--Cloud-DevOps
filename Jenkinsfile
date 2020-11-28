@@ -9,11 +9,7 @@ pipeline {
 		ECRCRED = 'ecr:us-west-2:Capston'
   }
 	stages {
-        stage('Clone') {
-            steps {
-                git repo clone "Fzaben/Capstone--Cloud-DevOps"
-            }
-        }
+
         stage('Lint') {
             steps {
                 sh 'hadolint --ignore DL3013 $WORKSPACE/Dockerfile'
