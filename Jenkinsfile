@@ -18,6 +18,7 @@ pipeline {
 			steps {
 				sh 'hadolint Dockerfile'
 			}
+		}
         stage('Lint') {
             steps {
                 sh 'hadolint --ignore DL3013 $WORKSPACE/Dockerfile'
