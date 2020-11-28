@@ -1,4 +1,3 @@
-
 pipeline {
     environment {
         registry = "fzaben/blue-app"
@@ -8,17 +7,21 @@ pipeline {
     agent any
     
     stages {
-
-        // stage('Lint') {
-        //     steps {
-        //         sh 'hadolint --ignore DL3013 $WORKSPACE/Dockerfile'
-        //         sh 'tidy -q -e $WORKSPACE/templates/index.html'
-        //     }
-        // }
+        stage('Cloning Git') {
+            steps {
+                sh 'aws'
+            }
+        }
+        stage('Lint') {
+            steps {
+                sh 'hadolint --ignore DL3013 $WORKSPACE/Dockerfile'
+                sh 'tidy -q -e $WORKSPACE/templates/index.html'
+            }
+        }
         stage('Build Image') {
             steps {
                 script {
-                       sh "docker build -t fzaben ."
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
                 }
             }
         }
@@ -62,28 +65,3 @@ pipeline {
       
     }
 }
-// pipeline {
-    
-//   agent any
-      
-
-//     stages {
-// 		stage("rollback deployment") {
-	
-// 	        steps {
-// 	           withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', 
-// 	                        accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
-// 	                        credentialsId: 'aws_id', 
-// 	                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-// 	               withCredentials([kubeconfigFile(credentialsId: 'kubernetes_config', 
-// 	                        variable: 'KUBECONFIG')]) {
-// 	               sh """
-// 	                    kubectl delete deploy ${params.AppName}
-// 					    kubectl delete svc ${params.AppName}
-// 				   """
-// 	               }
-// 	            }
-// 	        }
-// 	    }
-//     }
-// }
