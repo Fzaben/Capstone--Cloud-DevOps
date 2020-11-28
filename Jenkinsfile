@@ -1,20 +1,19 @@
 pipeline {
 	agent any
-  environment {
-        VERSION = 'latest'
-        PROJECT = 'capstone-app'
-		IMAGE = "$PROJECT"
-		ECRURL = "https://582512839761.dkr.ecr.us-west-2.amazonaws.com/$PROJECT"
-		ECRURI = "582512839761.dkr.ecr.us-west-2.amazonaws.com/$PROJECT"
-		ECRCRED = 'ecr:us-west-2:Capston'
-  }
+	environment {
+			VERSION = 'latest'
+			PROJECT = 'capstone-app'
+			IMAGE = "$PROJECT"
+			ECRURL = "https://582512839761.dkr.ecr.us-west-2.amazonaws.com/$PROJECT"
+			ECRURI = "582512839761.dkr.ecr.us-west-2.amazonaws.com/$PROJECT"
+			ECRCRED = 'ecr:us-west-2:Capston'
+	}
+	docker {
+		image 'hadolint/hadolint:latest-debian'
+	}
+
 	stages {
 		stage ("lint dockerfile") {
-			agent {
-				docker {
-					image 'hadolint/hadolint:latest-debian'
-				}
-			}
 			steps {
 				sh 'hadolint Dockerfile'
 			}
