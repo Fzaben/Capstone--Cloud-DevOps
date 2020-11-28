@@ -9,9 +9,9 @@ pipeline {
 		ECRCRED = 'ecr:us-west-2:Capston'
   }
 	stages {
-        stage('Cloning Git') {
+        stage('Inte') {
             steps {
-                git 'https://github.com/Fzaben/Capstone--Cloud-DevOps.git'
+                git clone 'https://github.com/Fzaben/Capstone--Cloud-DevOps.git'
             }
         }
         stage('Lint') {
@@ -21,7 +21,7 @@ pipeline {
             }
         }
 
-		stage('Docker build') {
+		stage('build') {
 		  steps {
 				script {
 				// Build the docker image using a Dockerfile
@@ -29,7 +29,7 @@ pipeline {
 				}
 			}
 		}
-		stage('Docker push') {
+		stage('push') {
 			steps {
 				script {
 					// Push the Docker image to ECR
