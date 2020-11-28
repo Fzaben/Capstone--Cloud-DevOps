@@ -103,11 +103,4 @@ pipeline {
             }
         }
     }
-
-    post {
-        always {
-            archiveArtifacts artifacts: "reports/web/**/*", allowEmptyArchive: true, fingerprint: true
-            junit "reports/junit/**/*.xml"
-        }
-    }
 }
