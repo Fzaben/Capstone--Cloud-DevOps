@@ -4,7 +4,7 @@ pipeline {
     environment {
         ROLE = 'blue'
 
-        DOCKER_USER = "AWS"
+        DOCKER_USER = "fzaben"
         NGINX_IMAGE = "$DOCKER_USER/capstone-nginx:$ROLE"
         FLASK_IMAGE = "$DOCKER_USER/capstone-flask:$ROLE"
         CI_IMAGE = "$DOCKER_USER/capstone-flask:ci"
@@ -14,7 +14,6 @@ pipeline {
         stage('Setup') {
             steps {
                 script {
-					ls -la
                     make lint
                 }
             }
@@ -24,9 +23,9 @@ pipeline {
             steps {
                 script {
                     docker.image("$CI_IMAGE").withRun { c ->
-                        sh "docker exec -i ${c.id} python -m flake8 ."
+                        sh "docker exec -i ${c.id} pyth
+                }on -m flake8 ."
                     }
-                }
             }
         }
     }
