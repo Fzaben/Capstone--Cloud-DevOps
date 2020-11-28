@@ -30,49 +30,6 @@ pipeline {
             }
         }
 
-        stage('Testing') {
-            stages {
-                stage('Security Testing') {
-                    steps {
-                        aquaMicroscanner imageName: "alpine:latest", notCompliesCmd: "exit 1", onDisallowed: "fail", outputFormat: "html"
-                    }
-                }
-
-                stage('General Testing') {
-                    steps {
-                        script {
-                            docker.image("$CI_IMAGE").withRun { c ->
-                                sh "docker exec -i ${c.id} python -m pytest -vv"
-                            }
-                        }
-                    }
-                }
-
-                stage('Performance Testing') {
-                    steps {
-                        script {
-                            docker.image("$CI_IMAGE").withRun { c ->
-                                sh "docker exec -i ${c.id} python -m locust -H http://127.0.0.1:8080 -f ./tests/performance.py --headless --print-stats --only-summary -u 100 -r 1 -t 1m"
-                            }
-                        }
-                    }
-                }
-
-                stage('Testing Artifacts') {
-                    steps {
-                        script {
-                            docker.image("$CI_IMAGE").withRun { c ->
-                                sh "docker exec -i ${c.id} python -m coverage run -m pytest --junitxml=reports/junit/junit.xml"
-                                sh "docker exec -i ${c.id} python -m coverage html -d reports/web"
-                                sh "docker cp ${c.id}:/app/reports ./reports"
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
         stage('Build') {
             steps {
                 script {
