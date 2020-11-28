@@ -1,16 +1,12 @@
-pipeline {
-    agent {
-        docker { image 'node:14-alpine' }
-    }
-    stages {
-        stage('Test') {
-            steps {
-                sh 'node --version'
-            }
-        }
+node {
+    checkout scm
+
+    def customImage = docker.build("my-image:${env.BUILD_ID}")
+
+    customImage.inside {
+        sh 'make lint'
     }
 }
-
 
 
 // pipeline {
