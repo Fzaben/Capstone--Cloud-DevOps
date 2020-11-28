@@ -9,7 +9,6 @@ pipeline {
 		ECRCRED = 'ecr:us-west-2:Capston'
   }
 	stages {
-
 		stage ("lint dockerfile") {
 			agent {
 				docker {
