@@ -1,8 +1,4 @@
 pipeline {
-    docker {
-      image 'node:lts-buster-slim'
-      
-    }
     agent any
     stages {
         stage('test') {
