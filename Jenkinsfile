@@ -23,12 +23,14 @@ pipeline {
             steps {
                 script {
                     docker.image("$CI_IMAGE").withRun { c ->
-                        sh "docker exec -i ${c.id} pyth
-                }on -m flake8 ."
-                    }
+                        sh "docker ps"
+                    }s
             }
         }
     }
+}
+}
+
 
     //     stage('Build') {
     //         steps {
@@ -60,4 +62,3 @@ pipeline {
     //         }
     //     }
     // }
-}
