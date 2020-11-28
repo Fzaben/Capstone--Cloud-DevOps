@@ -11,13 +11,13 @@ pipeline {
 	stages {
         stage('Clone') {
             steps {
-                gh repo clone "Fzaben/Capstone--Cloud-DevOps"
+                git repo clone "Fzaben/Capstone--Cloud-DevOps"
             }
         }
         stage('Lint') {
             steps {
                 sh 'hadolint --ignore DL3013 $WORKSPACE/Dockerfile'
-                sh 'tidy -q -e $WORKSPACE/templates/index.html'
+                sh 'tidy -q -e $WORKSPACE/index.html'
             }
         }
 
