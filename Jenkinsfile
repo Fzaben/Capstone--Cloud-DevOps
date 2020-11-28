@@ -9,9 +9,9 @@ pipeline {
 		ECRCRED = 'ecr:us-west-2:Capston'
   }
 	stages {
-        stage('Inte') {
+        stage('Clone') {
             steps {
-                git clone https://github.com/Fzaben/Capstone--Cloud-DevOps.git
+                git clone "https://github.com/Fzaben/Capstone--Cloud-DevOps.git"
             }
         }
         stage('Lint') {
