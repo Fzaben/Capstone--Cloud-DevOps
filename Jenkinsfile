@@ -9,11 +9,17 @@ pipeline {
 		ECRCRED = 'ecr:us-west-2:Capston'
   }
 	stages {
-		stage("Lint Dockerfile") {
-			steps {
-				sh "docker run --rm -i hadolint/hadolint:v1.17.5 < Dockerfile"
-			}
-		}
+        stage('Cloning Git') {
+            steps {
+                git 'https://github.com/Fzaben/Capstone--Cloud-DevOps.git'
+            }
+        }
+        stage('Lint') {
+            steps {
+                sh 'hadolint --ignore DL3013 $WORKSPACE/Dockerfile'
+                sh 'tidy -q -e $WORKSPACE/templates/index.html'
+            }
+        }
 
 		stage('Docker build') {
 		  steps {
