@@ -12,46 +12,8 @@ pipeline {
       
 
     stages {
-
-	    stage("Docker Build and Push") {
-
-                
-	        steps {
-	            dir("${params.AppName}") {
-	                dockerBuild ( "${params.ImageName}", "${params.docker_repo}" )
-	            }
-	        }
-	    }
-	    stage("Docker CleanUP") {
-	        when {
-				expression { params.action == 'create' }
-			}
-	        steps {
-	            dockerCleanup ( "${params.ImageName}", "${params.docker_repo}" )
-			}
-		}
-	    stage("Create deployment") {
-			when {
-				expression { params.action == 'create' }
-			}
-	        steps {
-	            dir("${params.AppName}") {
-	                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', 
-	                        accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
-	                        credentialsId: 'aws_id', 
-	                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-	                    withCredentials([kubeconfigFile(credentialsId: 'kubernetes_config', 
-	                        variable: 'KUBECONFIG')]) {
-	                        sh 'kubectl create -f kubernetes-configmap.yml'
-	                    }
-	                }
-	            }
-	        }
-	    }
 		stage("rollback deployment") {
-			when {
-				expression { params.action == 'rollback' }
-			}
+	
 	        steps {
 	           withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', 
 	                        accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
