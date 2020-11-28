@@ -3,11 +3,9 @@ pipeline {
 
     stage('Test') {
       steps {
-        container('golang') {
           sh """
-            go test
+           apt-get update
           """
-        }
       }
     }
 }
