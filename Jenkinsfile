@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        K8S_CONFIG_FILE = credentials('k8s-config-file')
         ROLE = 'blue'
 
         DOCKER_USER = "AWS"
@@ -15,6 +14,7 @@ pipeline {
         stage('Setup') {
             steps {
                 script {
+					ls -la
                     docker.build("$CI_IMAGE", "-f ./Dockerfile .")
                 }
             }
@@ -93,7 +93,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                withAWS(credentials: 'aws-creds', region: 'us-east-1') {
+                withAWS(credentials: 'aws-creds', region: 'us-west-2') {
                     sh """
                     kubectl apply --kubeconfig=${K8S_CONFIG_FILE} \
                         -f ./infra/k8s/deployments/${ROLE}.yaml \
