@@ -1,11 +1,13 @@
 pipeline {
     agent any
 
-    stage('Test') {
-      steps {
-          sh """
-           apt-get update
-          """
-      }
+    stages{
+        stage('Test') {
+            steps {
+                sh """
+                apt-get update
+                """
+            }
+        }
     }
 }
