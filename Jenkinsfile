@@ -1,67 +1,113 @@
 pipeline {
-	agent any
-	environment {
-			VERSION = 'latest'
-			PROJECT = 'capstone-app'
-			IMAGE = "$PROJECT"
-			ECRURL = "https://582512839761.dkr.ecr.us-west-2.amazonaws.com/$PROJECT"
-			ECRURI = "582512839761.dkr.ecr.us-west-2.amazonaws.com/$PROJECT"
-			ECRCRED = 'ecr:us-west-2:Capston'
-	}
-	stages {
-       stage('Setup') {
+    agent any
+
+    environment {
+        K8S_CONFIG_FILE = credentials('k8s-config-file')
+        ROLE = 'blue'
+
+        DOCKER_USER = "AWS"
+        NGINX_IMAGE = "$DOCKER_USER/capstone-nginx:$ROLE"
+        FLASK_IMAGE = "$DOCKER_USER/capstone-flask:$ROLE"
+        CI_IMAGE = "$DOCKER_USER/capstone-flask:ci"
+    }
+
+    stages {
+        stage('Setup') {
             steps {
                 script {
-                    docker.build("$IMAGE", "-f ./Dockerfile .")
+                    docker.build("$CI_IMAGE", "-f ./Dockerfile .")
                 }
             }
         }
-        stage('Lint') {
+
+        stage('Linting') {
             steps {
-                sh 'hadolint --ignore DL3013 $WORKSPACE/Dockerfile'
-                sh 'tidy -q -e $WORKSPACE/index.html'
+                script {
+                    docker.image("$CI_IMAGE").withRun { c ->
+                        sh "docker exec -i ${c.id} python -m flake8 ."
+                    }
+                }
             }
         }
 
-		stage('build') {
-		  steps {
-				script {
-				// Build the docker image using a Dockerfile
-				docker.build("$IMAGE")
-				}
-			}
-		}
-		stage('push') {
-			steps {
-				script {
-					// Push the Docker image to ECR
-					docker.withRegistry(ECRURL, ECRCRED) {
-						docker.image(IMAGE).push("latest")
-						docker.image(IMAGE).push(VERSION)
-					}
-				}
-			}
-		}
-		stage('K8S Deploy') {
-			steps {
-				withAWS(credentials: 'Capston', region: 'us-west-2') {
-					sh "aws eks --region us-west-2 update-kubeconfig --name UdacityCapStone-Cluster"
-					// Configure deployment
-					sh "kubectl apply -f k8s/deployment.yml"
-					// Configure service for loadbalancing
-					sh "kubectl apply -f k8s/service.yml"
-					// Set created image to do a rolling update
-					sh "kubectl set image deployments/$PROJECT $PROJECT=$ECRURI:$VERSION"
-				}
-			}
-		}
-  	}
-	post {
-		always {
-			docker {
-				sh "docker rmi $IMAGE | true"
-			}
-		    // make sure that the Docker image is removed
-		}
-	}
+        stage('Testing') {
+            stages {
+                stage('Security Testing') {
+                    steps {
+                        aquaMicroscanner imageName: "alpine:latest", notCompliesCmd: "exit 1", onDisallowed: "fail", outputFormat: "html"
+                    }
+                }
+
+                stage('General Testing') {
+                    steps {
+                        script {
+                            docker.image("$CI_IMAGE").withRun { c ->
+                                sh "docker exec -i ${c.id} python -m pytest -vv"
+                            }
+                        }
+                    }
+                }
+
+                stage('Performance Testing') {
+                    steps {
+                        script {
+                            docker.image("$CI_IMAGE").withRun { c ->
+                                sh "docker exec -i ${c.id} python -m locust -H http://127.0.0.1:8080 -f ./tests/performance.py --headless --print-stats --only-summary -u 100 -r 1 -t 1m"
+                            }
+                        }
+                    }
+                }
+
+                stage('Testing Artifacts') {
+                    steps {
+                        script {
+                            docker.image("$CI_IMAGE").withRun { c ->
+                                sh "docker exec -i ${c.id} python -m coverage run -m pytest --junitxml=reports/junit/junit.xml"
+                                sh "docker exec -i ${c.id} python -m coverage html -d reports/web"
+                                sh "docker cp ${c.id}:/app/reports ./reports"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        stage('Build') {
+            steps {
+                script {
+                    docker.build("$NGINX_IMAGE", "-f ./infra/docker/$ROLE/nginx/Dockerfile .")
+                    docker.build("$FLASK_IMAGE", "-f ./infra/docker/$ROLE/flask/Dockerfile .")
+                }
+            }
+        }
+
+        stage('Publish') {
+            steps {
+                script {
+                    docker.image("$NGINX_IMAGE").push()
+                    docker.image("$FLASK_IMAGE").push()
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                withAWS(credentials: 'aws-creds', region: 'us-east-1') {
+                    sh """
+                    kubectl apply --kubeconfig=${K8S_CONFIG_FILE} \
+                        -f ./infra/k8s/deployments/${ROLE}.yaml \
+                        -f ./infra/k8s/services/${ROLE}.yaml
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: "reports/web/**/*", allowEmptyArchive: true, fingerprint: true
+            junit "reports/junit/**/*.xml"
+        }
+    }
 }
