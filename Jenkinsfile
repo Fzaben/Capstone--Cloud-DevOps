@@ -8,16 +8,14 @@ pipeline {
 			ECRURI = "582512839761.dkr.ecr.us-west-2.amazonaws.com/$PROJECT"
 			ECRCRED = 'ecr:us-west-2:Capston'
 	}
-	docker {
-		image 'hadolint/hadolint:latest-debian'
-	}
-
 	stages {
-		stage ("lint dockerfile") {
-			steps {
-				sh 'hadolint Dockerfile'
-			}
-		}
+       stage('Setup') {
+            steps {
+                script {
+                    docker.build("$IMAGE", "-f ./Dockerfile .")
+                }
+            }
+        }
         stage('Lint') {
             steps {
                 sh 'hadolint --ignore DL3013 $WORKSPACE/Dockerfile'
