@@ -1,52 +1,33 @@
 pipeline {
    agent any
+   
+   environment {
+       DEMO='1.3'
+   }
 
    stages {
-       stage('Build') {
-
-           steps {
-             sh 'docker build .'
-           }
-       }
-       stage('Test') {
-           agent {
-               docker {
-                   image 'golang'
-               }
-           }
-           steps {
-               // Create our project directory.
-               sh 'cd ${GOPATH}/src'
-               sh 'mkdir -p ${GOPATH}/src/hello-world'
-               // Copy all files in our Jenkins workspace to our project directory.
-               sh 'cp -r ${WORKSPACE}/* ${GOPATH}/src/hello-world'
-               // Remove cached test results.
-               sh 'go clean -cache'
-               // Run Unit Tests.
-               sh 'go test ./... -v -short'
-           }
-       }
-       stage('Publish') {
-           environment {
-               registryCredential = 'dockerhub'
-           }
-           steps{
-               script {
-                   def appimage = docker.build registry + ":$BUILD_NUMBER"
-                   docker.withRegistry( '', registryCredential ) {
-                       appimage.push()
-                       appimage.push('latest')
-                   }
-               }
-           }
-       }
-       stage ('Deploy') {
-           steps {
-               script{
-                   def image_id = registry + ":$BUILD_NUMBER"
-                   sh "ansible-playbook  playbook.yml --extra-vars \"image_id=${image_id}\""
-               }
-           }
-       }
+      stage('lint') {
+         steps {
+            sh '''
+                  make lint
+            '''
+         }
+      }
+      stage('integration') {
+         steps {
+            sh '''
+               chmod +x ./scripts/integration/build.sh
+               APP_NAME=capston-app ./scripts/integration/build.sh
+            '''
+         }
+      }
+      stage('deploy') {
+         steps {
+            sh '''
+               chmod +x ./scripts/deploy/deploy.sh
+               ./scripts/deploy/deploy.sh
+            '''
+         }
+      }
    }
 }

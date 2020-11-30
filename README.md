@@ -19,6 +19,25 @@ In this project, you will apply the skills you have acquired in this course to o
 - jenkins
 - git bash
 
+## Pre-reqs
+
+Run Jenkins in [Docker](https://www.docker.com/products/docker-desktop):
+
+```
+docker-compose -f jenkins/docker-compose.yml up -d
+```
+
+> Plugins configured in [install-plugins.groovy](../jenkins/20.04/scripts/install-plugins.groovy)
+
+## 1.1 Create a simple pipeline
+
+Log into Jenkins at http://localhost:8080 with `psod`/`psod`.
+
+- New item, pipeline, `demo1-1`
+- Select sample pipeline script
+- Replace echo with `echo "This is build number $BUILD_NUMBER"`
+- Run and check output
+
 ### scripts files 
 - `./aws/create_stack.sh UdacityCapStone-Network aws/network/network.yml aws/network/params.json` Creating application infastructure
 - `./aws/create_stack.sh UdacityCapStone-Cluster aws/cluster/cluster.yml aws/cluster/params.json` Creating k8s cluster
