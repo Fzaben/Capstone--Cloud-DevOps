@@ -42,7 +42,7 @@ Log into Jenkins at http://localhost:8080 with `psod`/`psod`.
 - `./aws/create_stack.sh UdacityCapStone-Network aws/network/network.yml aws/network/params.json` Creating application infastructure
 - `./aws/create_stack.sh UdacityCapStone-Cluster aws/cluster/cluster.yml aws/cluster/params.json` Creating k8s cluster
 - `./aws/create_stack.sh UdacityCapStone-Nodes aws/nodes/nodes.yml aws/nodes/params.json` Creating k8s 
-- `Run kubectl apply -f ./aws/k8s/configmap.yaml` configure with the EKS 
+- `Run kubectl apply -f ./iac/k8s/configmap.yaml` configure with the EKS 
     `aws eks --region us-west-2 update-kubeconfig --name UdacityCapStone-Cluster` to apply kubectl command from local    
 
 - `./aws/create_stack.sh UdacityCapStone-ECR aws/container-registry/cluster.yml aws/container-registry/params.json` Creating k8s container registry
