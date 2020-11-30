@@ -1,7 +1,7 @@
 version: "3.7"
 services:
-  capston-app:
-    image: "fzaben/capston-app:${TAG}"
+  capstone-app:
+    image: "fzaben/capstone-app:${TAG}"
     build:
       context: ../../
       dockerfile: ./Dockerfile
