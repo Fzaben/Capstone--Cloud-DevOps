@@ -24,6 +24,7 @@ pipeline {
       stage('deploy') {
          steps {
             sh '''
+               aws eks --region us-west-2 update-kubeconfig --name UdacityCapStone-Cluster
                chmod +x ./scripts/deploy/deploy.sh
                ./scripts/deploy/deploy.sh
             '''
