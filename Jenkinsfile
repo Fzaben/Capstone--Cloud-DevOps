@@ -17,7 +17,7 @@ pipeline {
          steps {
             sh '''
                chmod +x ./scripts/integration/build.sh
-               APP_NAME=capston-app ./scripts/integration/build.sh
+               ./scripts/integration/build.sh
             '''
          }
       }
